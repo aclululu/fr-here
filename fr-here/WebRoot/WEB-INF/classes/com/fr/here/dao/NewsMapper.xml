@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fr.here.dao.NewsMapper" >
+  <resultMap id="BaseResultMap" type="com.fr.here.model.News" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="CID" property="cid" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="abstract_" property="abstract_" jdbcType="VARCHAR" />
+    <result column="keywords" property="keywords" jdbcType="VARCHAR" />
+    <result column="picnews" property="picnews" jdbcType="INTEGER" />
+    <result column="picture" property="picture" jdbcType="VARCHAR" />
+    <result column="origin" property="origin" jdbcType="VARCHAR" />
+    <result column="cdate" property="cdate" jdbcType="TIMESTAMP" />
+    <result column="author" property="author" jdbcType="VARCHAR" />
+    <result column="editor" property="editor" jdbcType="VARCHAR" />
+    <result column="clicks" property="clicks" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="priority" property="priority" jdbcType="INTEGER" />
+    <result column="newscolumn" property="column" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.fr.here.model.News" extends="BaseResultMap" >
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, CID, title, abstract_, keywords, picnews, picture, origin, cdate, author, editor, 
+    clicks, status, priority
+  </sql>
+  <sql id="Blob_Column_List" >
+    content
+  </sql>
+  
+  <select id="findNewss" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+     t.ID, CID, title, abstract_, keywords, picnews, picture, origin, cdate, author, editor, 
+    clicks, status, priority,
+    <include refid="Blob_Column_List" />
+    ,c.name newscolumn
+    from ct_news t left join ct_newscolumn c on t.cid = c.id
+    <where> 
+     <if test="likename !=null and likename!= '' ">  
+            t.title LIKE concat('%',#{likename},'%')
+     </if>
+     <if test="title !=null ">  
+            AND  t.title = #{title, jdbcType=VARCHAR}  
+     </if>   
+     <if test="id != null and id!= '' ">  
+            AND t.ID = #{id}  
+     </if>
+     <if test="status != null and status!= '' ">  
+            AND t.status = #{status}  
+     </if>  
+     <if test="cid != null and cid!= '' ">  
+            AND t.CID = #{cid}  
+     </if>
+     <if test="likeeditor != null and likeeditor!= '' ">  
+            AND t.editor  LIKE concat('%',#{likeeditor},'%')
+     </if>
+     <if test="startDate != null and startDate !='' ">  
+            <![CDATA[ AND t.cdate >= #{startDate} ]]>  
+     </if>
+     <if test="endDate != null and endDate!= '' ">  
+            <![CDATA[ AND t.cdate <=  #{endDate} ]]>  
+     </if>
+     <if test="picnews != null and picnews !=  '' ">  
+            <![CDATA[ AND t.picnews =  #{picnews} ]]>  
+     </if>
+    </where>
+    <if test="sort != null and sort != ''">
+            order by ${sort} ${order}
+    </if>
+    <if test="bannersort != null and bannersort != ''">
+            order by cdate desc ,priority desc,clicks desc
+    </if>
+    <if test="length > 0">
+            limit #{offset},#{length}
+    </if>
+  </select>
+  
+  <select id="getWxPushNews"  resultMap="BaseResultMap"   parameterType="java.lang.Integer" >
+   select 
+     t.ID, CID, title, abstract_, keywords, picnews, picture, origin, cdate, author, editor, 
+    clicks, status, priority,
+    <include refid="Blob_Column_List" />
+    ,c.name newscolumn
+    from ct_news t left join ct_newscolumn c on t.cid = c.id
+    where t.cid = #{cid}
+     and  t.status > 0
+    order by priority desc ,cdate desc ,t.id desc
+    limit 0,5
+  </select>
+  
+  
+    <select id="findNewsCount" resultType="java.lang.Integer" parameterType="Map" >
+    SELECT 
+    count(id)
+    FROM ct_news t
+      <where> 
+     <if test="likename !=null and likename!= '' ">  
+            t.title LIKE concat('%',#{likename},'%')
+     </if>
+     <if test="title !=null ">  
+            AND  t.title = #{title, jdbcType=VARCHAR}  
+     </if>   
+     <if test="id != null and id!= '' ">  
+            AND t.ID = #{id, jdbcType=INTEGER}  
+     </if> 
+     <if test="cid != null and cid!= '' ">  
+            AND t.CID = #{cid, jdbcType=INTEGER}  
+     </if>
+     <if test="likeeditor != null and likeeditor!= '' ">  
+            AND t.editor  LIKE concat('%',#{likeeditor},'%')
+     </if>
+     <if test="startDate != null and startDate !='' ">  
+            <![CDATA[ AND t.cdate >= #{startDate} ]]>  
+     </if>
+          <if test="endDate != null and endDate!= '' ">  
+            <![CDATA[ AND t.cdate <=  #{endDate} ]]>  
+     </if>
+    </where>
+  </select>
+  
+  
+  
+  <delete id="deleteNews" parameterType="java.lang.Integer" >
+    delete from ct_news
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  
+    <delete id="deleteNewss">
+    delete from ct_news
+    where ID in
+    <foreach collection="array" item="ids"  open="(" separator="," close=")">  
+        #{ids}  
+     </foreach>  
+    </delete>
+  
+  
+   <insert id="addNews" parameterType="com.fr.here.model.News" useGeneratedKeys="true"   keyProperty="id">
+    insert into ct_news
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cid != null" >
+        CID,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="abstract_ != null" >
+        abstract_,
+      </if>
+      <if test="keywords != null" >
+        keywords,
+      </if>
+      <if test="picnews != null" >
+        picnews,
+      </if>
+      <if test="picture != null" >
+        picture,
+      </if>
+      <if test="origin != null" >
+        origin,
+      </if>
+      <if test="cdate != null" >
+        cdate,
+      </if>
+      <if test="author != null" >
+        author,
+      </if>
+      <if test="editor != null" >
+        editor,
+      </if>
+      <if test="clicks != null" >
+        clicks,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="priority != null" >
+        priority,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="abstract_ != null" >
+        #{abstract_,jdbcType=VARCHAR},
+      </if>
+      <if test="keywords != null" >
+        #{keywords,jdbcType=VARCHAR},
+      </if>
+      <if test="picnews != null" >
+        #{picnews,jdbcType=INTEGER},
+      </if>
+      <if test="picture != null" >
+        #{picture,jdbcType=VARCHAR},
+      </if>
+      <if test="origin != null" >
+        #{origin,jdbcType=VARCHAR},
+      </if>
+      <if test="cdate != null" >
+        #{cdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="author != null" >
+        #{author,jdbcType=VARCHAR},
+      </if>
+      <if test="editor != null" >
+        #{editor,jdbcType=VARCHAR},
+      </if>
+      <if test="clicks != null" >
+        #{clicks,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="priority != null" >
+        #{priority,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateNews" parameterType="com.fr.here.model.News" >
+     update ct_news set
+        CID = #{cid,jdbcType=INTEGER},
+        title = #{title,jdbcType=VARCHAR},
+        abstract_ = #{abstract_,jdbcType=VARCHAR},
+        keywords = #{keywords,jdbcType=VARCHAR},
+        picnews = #{picnews,jdbcType=INTEGER},
+        picture = #{picture,jdbcType=VARCHAR},
+        origin = #{origin,jdbcType=VARCHAR},
+        cdate = #{cdate,jdbcType=TIMESTAMP},
+        author = #{author,jdbcType=VARCHAR},
+        editor = #{editor,jdbcType=VARCHAR},
+        clicks = #{clicks,jdbcType=INTEGER},
+        status = #{status,jdbcType=INTEGER},
+        priority = #{priority,jdbcType=INTEGER},
+        content = #{content,jdbcType=LONGVARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+
+
+	<update id="updateNewss" parameterType="Map">
+    update ct_news set status = ${status}
+    where id in
+    <foreach collection="ids" item="id"  open="(" separator="," close=")">  
+        #{id}  
+     </foreach>  
+    </update>
+
+
+
+</mapper>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fr.here.dao.SupplyColumnMapper" >
+  <resultMap id="BaseResultMap" type="com.fr.here.model.SupplyColumn" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, name
+  </sql>
+  
+  <select id="findSupplyColumns" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from ct_supplycolumn t
+    <where> 
+     <if test="likename !=null and likename!= '' ">  
+            t.name LIKE concat('%',#{likename},'%')
+     </if>
+     <if test="name !=null ">  
+            AND  t.name = #{name, jdbcType=VARCHAR}  
+     </if>   
+     <if test="id != null and id!= '' ">  
+            AND t.ID = #{id, jdbcType=INTEGER}  
+     </if>
+    </where>
+    <if test="sort != null and sort != ''">
+            order by ${sort} ${order}
+    </if>
+    <if test="length > 0">
+            limit #{offset},#{length}
+    </if>
+  </select>
+  
+    <select id="findSupplyColumnsCount" resultType="java.lang.Integer" parameterType="Map" >
+    SELECT 
+    count(id)
+    FROM ct_supplycolumn t
+    <where> 
+     <if test="likename !=null and likename!= ''  ">  
+            t.name LIKE concat('%',#{likename},'%')
+     </if>
+     </where>
+  </select>
+  
+  
+  
+  <delete id="deleteSupplyColumn" parameterType="java.lang.Integer" >
+    delete from ct_supplycolumn
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+    
+  
+<insert id="addSupplyColumn" parameterType="com.fr.here.model.SupplyColumn" useGeneratedKeys="true"   keyProperty="id">
+    insert into ct_supplycolumn
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="name != null" >
+        name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="updateSupplyColumn" parameterType="com.fr.here.model.SupplyColumn" >
+   update ct_supplycolumn
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

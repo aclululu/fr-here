@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fr.here.dao.SysRole_PrivilegeMapper" >
+
+  <select id="findPrivilegesByRoleID" resultType="com.fr.here.model.SysPrivilege" parameterType="java.lang.Integer" >
+    SELECT 
+    p.ID id, p.PID pid, p.name name, p.url url, p.info info
+    FROM ct_role_privilege t 
+    left join ct_privilege p on t.privilegeid = p.id 
+    where t.roleID = #{roleid}
+  </select>
+ 
+  
+  <delete id="deletePrivilegesByRoleIDS" >
+    delete from ct_role_privilege
+    where roleid in
+    <foreach collection="array" item="roleids"  open="(" separator="," close=")">  
+        #{roleids}  
+     </foreach>  
+  </delete>
+  
+    <delete id="deletePrivilegesByProvilgerIDs">
+    delete from ct_role_privilege
+    where privilegeid in
+    <foreach collection="array" item="ids"  open="(" separator="," close=")">  
+        #{ids}  
+     </foreach>  
+    </delete>
+  
+  <insert id="addRolePrivilege" >
+    insert into ct_role_privilege (roleid,privilegeid) 
+	values 
+	<foreach collection="list" item="item" index="index" separator=",">
+	(#{item.roleid},#{item.privilegeid})
+	</foreach>
+  </insert>
+</mapper>

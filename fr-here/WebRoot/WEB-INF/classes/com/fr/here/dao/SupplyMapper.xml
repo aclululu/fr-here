@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fr.here.dao.SupplyMapper" >
+  <resultMap id="BaseResultMap" type="com.fr.here.model.Supply" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="CID" property="cid" jdbcType="INTEGER" />
+    <result column="SIO" property="sio" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="cdate" property="cdate" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="openid" property="openid" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="suname" property="suname" jdbcType="VARCHAR" />
+    <result column="overdate" property="overdate" jdbcType="TIMESTAMP" />
+     <result column="supplycolumn" property="column" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.fr.here.model.Supply" extends="BaseResultMap" >
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, CID, SIO, title, cdate, status, address, phone, suname, overdate,openid
+  </sql>
+  <sql id="Blob_Column_List" >
+    content
+  </sql>
+  
+  <select id="findSupplys" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+     t.ID, CID, SIO, title, cdate, status, address, phone, suname, overdate,openid,
+    <include refid="Blob_Column_List" />
+    ,c.name supplycolumn
+    from ct_supply t left join ct_supplycolumn c on t.cid = c.id
+    <where> 
+     <if test="likename !=null and likename!= '' ">  
+            t.title LIKE concat('%',#{likename},'%')
+     </if>
+     <if test="title !=null ">  
+            AND  t.title = #{title, jdbcType=VARCHAR}  
+     </if>   
+     <if test="id != null and id!= '' ">  
+            AND t.ID = #{id}  
+     </if>
+        <if test="sio != null and sio!= '' ">  
+            AND t.SIO = #{sio}  
+     </if>
+     <if test="status != null and status!= '' ">  
+            AND t.status = #{status}  
+     </if>  
+     <if test="cid != null and cid!= '' ">  
+            AND t.CID = #{cid}  
+     </if>
+     <if test="openid != null and openid!= '' ">  
+            AND t.openid = #{openid}  
+     </if>
+     <if test="startDate != null and startDate !='' ">  
+            <![CDATA[ AND t.cdate >= #{startDate} ]]>  
+     </if>
+     <if test="endDate != null and endDate!= '' ">  
+            <![CDATA[ AND t.cdate <=  #{endDate} ]]>  
+     </if>
+    </where>
+    <if test="sort != null and sort != ''">
+            order by ${sort} ${order}
+    </if>
+    <if test="length > 0">
+            limit #{offset},#{length}
+    </if>
+  </select>
+  
+  <select id="getWxPushSupply" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+   select 
+     t.ID, CID, SIO, title, cdate, status, address, phone, suname, overdate,openid,
+    <include refid="Blob_Column_List" />
+    ,c.name supplycolumn
+    from ct_supply t left join ct_supplycolumn c on t.cid = c.id
+    where t.sio = #{sio}
+    and  t.status > 0
+    order by cdate desc ,id desc
+    limit 0,5
+  </select>
+  
+  
+  
+    <select id="findSupplyCount" resultType="java.lang.Integer" parameterType="Map" >
+    SELECT 
+    count(id)
+    FROM ct_supply t
+      <where> 
+     <if test="likename !=null and likename!= '' ">  
+            t.title LIKE concat('%',#{likename},'%')
+     </if>
+     <if test="title !=null ">  
+            AND  t.title = #{title, jdbcType=VARCHAR}  
+     </if>   
+     <if test="id != null and id!= '' ">  
+            AND t.ID = #{id, jdbcType=INTEGER}  
+     </if> 
+             <if test="sio != null and sio!= '' ">  
+            AND t.SIO = #{sio}  
+     </if>
+     <if test="cid != null and cid!= '' ">  
+            AND t.CID = #{cid, jdbcType=INTEGER}  
+     </if>
+     <if test="startDate != null and startDate !='' ">  
+            <![CDATA[ AND t.cdate >= #{startDate} ]]>  
+     </if>
+          <if test="endDate != null and endDate!= '' ">  
+            <![CDATA[ AND t.cdate <=  #{endDate} ]]>  
+     </if>
+    </where>
+  </select>
+  
+  
+  
+  <delete id="deleteSupply" parameterType="java.lang.Integer" >
+    delete from ct_supply
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  
+    <delete id="deleteSupplys">
+    delete from ct_supply
+    where ID in
+    <foreach collection="ids" item="id"  open="(" separator="," close=")">  
+        #{id}  
+     </foreach>  
+    </delete>
+  
+  
+   <insert id="addSupply" parameterType="com.fr.here.model.Supply" useGeneratedKeys="true"   keyProperty="id">
+	insert into ct_supply
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cid != null" >
+        CID,
+      </if>
+      <if test="sio != null" >
+        SIO,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="cdate != null" >
+        cdate,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="suname != null" >
+        suname,
+      </if>
+      <if test="overdate != null" >
+        overdate,
+      </if>
+      <if test="openid != null" >
+        openid,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="sio != null" >
+        #{sio,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="cdate != null" >
+        #{cdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="suname != null" >
+        #{suname,jdbcType=VARCHAR},
+      </if>
+      <if test="overdate != null" >
+        #{overdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="openid != null" >
+        #{openid,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateSupply" parameterType="com.fr.here.model.Supply" >
+       update ct_supply
+       set
+        CID = #{cid,jdbcType=INTEGER},
+        SIO = #{sio,jdbcType=INTEGER},
+        title = #{title,jdbcType=VARCHAR},
+        cdate = #{cdate,jdbcType=TIMESTAMP},
+        status = #{status,jdbcType=INTEGER},
+        address = #{address,jdbcType=VARCHAR},
+        phone = #{phone,jdbcType=VARCHAR},
+        suname = #{suname,jdbcType=VARCHAR},
+        overdate = #{overdate,jdbcType=TIMESTAMP},
+        content = #{content,jdbcType=LONGVARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+
+	<update id="updateSupplys" parameterType="Map">
+    update ct_supply set status = ${status}
+    where id in
+    <foreach collection="ids" item="id"  open="(" separator="," close=")">  
+        #{id}  
+     </foreach>  
+    </update>
+</mapper>

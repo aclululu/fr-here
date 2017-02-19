@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fr.here.dao.NewsColumnMapper" >
+  <resultMap id="BaseResultMap" type="com.fr.here.model.NewsColumn" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, name
+  </sql>
+  
+  <select id="findNewsColumns" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from ct_newscolumn t
+    <where> 
+     <if test="likename !=null and likename!= '' ">  
+            t.name LIKE concat('%',#{likename},'%')
+     </if>
+     <if test="name !=null ">  
+            AND  t.name = #{name, jdbcType=VARCHAR}  
+     </if>   
+     <if test="id != null and id!= '' ">  
+            AND t.ID = #{id, jdbcType=INTEGER}  
+     </if>
+    </where>
+    <if test="sort != null and sort != ''">
+            order by ${sort} ${order}
+    </if>
+    <if test="length > 0">
+            limit #{offset},#{length}
+    </if>
+  </select>
+  
+    <select id="findNewsColumnsCount" resultType="java.lang.Integer" parameterType="Map" >
+    SELECT 
+    count(id)
+    FROM ct_newscolumn t
+    <where> 
+     <if test="likename !=null and likename!= ''  ">  
+            t.name LIKE concat('%',#{likename},'%')
+     </if>
+     </where>
+  </select>
+  
+  
+  
+  <delete id="deleteNewsColumn" parameterType="java.lang.Integer" >
+    delete from ct_newscolumn
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+    
+  
+<insert id="addNewsColumn" parameterType="com.fr.here.model.NewsColumn" useGeneratedKeys="true"   keyProperty="id">
+    insert into ct_newscolumn
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="name != null" >
+        name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <update id="updateNewsColumn" parameterType="com.fr.here.model.NewsColumn" >
+   update ct_newscolumn
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

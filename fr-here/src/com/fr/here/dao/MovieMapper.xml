@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fr.here.dao.MovieMapper" >
+  <resultMap id="BaseResultMap" type="com.fr.here.model.Movie" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="cdate" property="cdate" jdbcType="TIMESTAMP" />
+    <result column="creator" property="creator" jdbcType="VARCHAR" />
+    <result column="picurl" property="picurl" jdbcType="VARCHAR" />
+    <result column="movieurl" property="movieurl" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="abstract_" property="abstract_" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, cdate, creator, picurl, movieurl, title, abstract_
+  </sql>
+  <select id="findMovies" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ct_movie t
+    <where> 
+     <if test="id != null and id!= '' ">  
+            AND t.ID = #{id, jdbcType=INTEGER}  
+     </if>
+    </where>
+    <if test="sort != null and sort != ''">
+            order by ${sort} ${order}
+    </if>
+    <if test="length > 0">
+            limit #{offset},#{length}
+    </if>
+  </select>  
+  
+   <select id="findMoviesCount" resultType="java.lang.Integer" parameterType="Map" >
+    SELECT 
+    count(id)
+    FROM ct_movie t
+  </select>
+    
+  <delete id="deleteMovie" parameterType="java.lang.Integer" >
+    delete from ct_movie
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  
+    <delete id="deleteMovies">
+    delete from ct_movie
+    where ID in
+    <foreach collection="array" item="ids"  open="(" separator="," close=")">  
+        #{ids}  
+     </foreach>  
+    </delete>
+
+	<insert id="addMovie" parameterType="com.fr.here.model.Movie" useGeneratedKeys="true"   keyProperty="id" >
+    insert into ct_movie
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cdate != null" >
+        cdate,
+      </if>
+      <if test="creator != null" >
+        creator,
+      </if>
+      <if test="picurl != null" >
+        picurl,
+      </if>
+      <if test="movieurl != null" >
+        movieurl,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="abstract_ != null" >
+        abstract_,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cdate != null" >
+        #{cdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="creator != null" >
+        #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="picurl != null" >
+        #{picurl,jdbcType=VARCHAR},
+      </if>
+      <if test="movieurl != null" >
+        #{movieurl,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="abstract_ != null" >
+        #{abstract_,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+ 
+  <update id="updateMovie" parameterType="com.fr.here.model.Movie" >
+    update ct_movie
+    set cdate = #{cdate,jdbcType=TIMESTAMP},
+      creator = #{creator,jdbcType=VARCHAR},
+      picurl = #{picurl,jdbcType=VARCHAR},
+      movieurl = #{movieurl,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      abstract_ = #{abstract_,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fr.here.dao.SysPrivilegeMapper" >
+  <resultMap id="BaseResultMap" type="com.fr.here.model.SysPrivilege" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="PID" property="pid" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="info" property="info" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, PID, name, url, info
+  </sql>
+  
+  <select id="findSysPrivileges" resultMap="BaseResultMap" parameterType="Map" >
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM ct_privilege t
+    <where> 
+     <if test="likename !=null and likename!= '' ">  
+            t.name LIKE concat('%',#{likename},'%')
+     </if>
+     <if test="name !=null ">  
+            AND  t.name = #{name, jdbcType=VARCHAR}  
+     </if>   
+     <if test="id != null and id!= '' ">  
+            AND t.ID = #{id, jdbcType=INTEGER}  
+     </if> 
+     <if test="pid != null and pid!= '' ">  
+            AND t.PID = #{pid, jdbcType=INTEGER}  
+     </if>
+    </where>
+    <if test="sort != null and sort != ''">
+            order by ${sort} ${order}
+    </if>
+    <if test="length > 0">
+            limit #{offset},#{length}
+    </if>
+  </select>
+  
+  
+    <select id="findSysPrivilegesCount" resultType="java.lang.Integer" parameterType="Map" >
+    SELECT 
+    count(id)
+    FROM ct_privilege t
+    <where> 
+     <if test="likename !=null and likename!= '' ">  
+            t.name LIKE concat('%',#{likename},'%')
+     </if>
+     </where>
+  </select>
+  
+  
+  
+   <select id="findBossSysPrivilegeList" resultMap="BaseResultMap" >
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM ct_privilege t where t.pid = 0
+  </select>
+  
+  
+  <delete id="deleteSysPrivileger" parameterType="java.lang.Integer" >
+    delete from ct_privilege
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  
+    <delete id="deleteSysPrivilegers">
+    delete from ct_privilege
+    where ID in
+    <foreach collection="array" item="ids"  open="(" separator="," close=")">  
+        #{ids}  
+     </foreach>  
+    </delete>
+  
+  
+  
+  
+  <insert id="addSysPrivilege" parameterType="com.fr.here.model.SysPrivilege" useGeneratedKeys="true"   keyProperty="id" >
+    insert into ct_privilege
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="pid != null" >
+        PID,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+      <if test="info != null" >
+        info,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="pid != null" >
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="info != null" >
+        #{info,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateSysPrivileger" parameterType="com.fr.here.model.SysPrivilege" >
+    update ct_privilege
+    <set >
+      <if test="pid != null" >
+        PID = #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="info != null" >
+        info = #{info,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

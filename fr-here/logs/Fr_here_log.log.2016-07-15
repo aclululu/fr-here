@@ -1,0 +1,8 @@
+2016-07-15 10:19:13,077 [main] INFO  [MenuManager.java] - 菜单创建成功
+2016-07-15 10:20:50,218 [main] INFO  [MenuManager.java] - 菜单创建成功
+2016-07-15 10:22:01,877 [main] INFO  [MenuManager.java] - 菜单创建成功
+2016-07-15 10:23:17,858 [main] INFO  [MenuManager.java] - 菜单创建成功
+2016-07-15 10:24:26,619 [main] ERROR [MenuUtil.java] - 创建菜单失败 errcode:{}48001 errmsg:{}api unauthorized hint: [sr_ndA0464vr22]
+2016-07-15 10:24:26,620 [main] INFO  [MenuManager.java] - 菜单创建失败
+2016-07-15 10:25:20,367 [main] INFO  [MenuManager.java] - 菜单创建成功
+2016-07-15 11:11:44,282 [main] INFO  [MenuManager.java] - 菜单创建成功

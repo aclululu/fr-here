@@ -1,0 +1,9 @@
+2016-07-13 15:51:30,700 [main] ERROR [CommonUtil.java] - woshisisshishsi
+java.lang.RuntimeException: sssss
+	at com.fr.weixin.util.CommonUtil.main(CommonUtil.java:118)
+2016-07-13 15:52:10,832 [main] ERROR [CommonUtil.java] - woshisisshishsi{}
+java.lang.RuntimeException: sssss
+	at com.fr.weixin.util.CommonUtil.main(CommonUtil.java:118)
+2016-07-13 17:29:20,561 [main] ERROR [MenuUtil.java] - 创建菜单失败 errcode:{}40026 errmsg:{}invalid sub button key size hint: [E5y9fa0159vr23]
+2016-07-13 17:29:20,564 [main] INFO  [MenuManager.java] - 菜单创建失败
+2016-07-13 17:32:28,366 [main] INFO  [MenuManager.java] - 菜单创建成功

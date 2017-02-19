@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fr.here.dao.AppWelcomeMapper" >
+  <resultMap id="BaseResultMap" type="com.fr.here.model.AppWelcome" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="picurl" property="picurl" jdbcType="VARCHAR" />
+    <result column="info" property="info" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, picurl, info
+  </sql>
+  
+ <select id="findAppWelcomes" resultMap="BaseResultMap" parameterType="Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from ct_appwelcome t
+    <where> 
+     <if test="id != null and id!= '' ">  
+            AND t.ID = #{id, jdbcType=INTEGER}  
+     </if>
+    </where>
+    <if test="sort != null and sort != ''">
+            order by ${sort} ${order}
+    </if>
+    <if test="length > 0">
+            limit #{offset},#{length}
+    </if>
+  </select>
+  
+   <select id="findAppWelcomesCount" resultType="java.lang.Integer" parameterType="Map" >
+    SELECT 
+    count(id)
+    FROM ct_appwelcome t
+  </select>
+  
+  <delete id="deleteAppWelcome" parameterType="java.lang.Integer" >
+    delete from ct_appwelcome
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  
+    <delete id="deleteAppWelcomes">
+    delete from ct_appwelcome
+    where ID in
+    <foreach collection="array" item="ids"  open="(" separator="," close=")">  
+        #{ids}  
+     </foreach>  
+    </delete>
+  
+  
+   <insert id="addAppWelcome" parameterType="com.fr.here.model.AppWelcome" useGeneratedKeys="true"   keyProperty="id" >
+    insert into ct_appwelcome
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="picurl != null" >
+        picurl,
+      </if>
+      <if test="info != null" >
+        info,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="picurl != null" >
+        #{picurl,jdbcType=VARCHAR},
+      </if>
+      <if test="info != null" >
+        #{info,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+    <update id="updateAppWelcome" parameterType="com.fr.here.model.AppWelcome" >
+    update ct_appwelcome
+    set picurl = #{picurl,jdbcType=VARCHAR},
+      info = #{info,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+  
+  
+</mapper>

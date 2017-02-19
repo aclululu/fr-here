@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fr.here.dao.SysRoleMapper" >
+  <resultMap id="BaseResultMap" type="com.fr.here.model.SysRole" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="info" property="info" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, name, info
+  </sql>
+  
+  <select id="findSysRoles" resultMap="BaseResultMap" parameterType="Map" >
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM ct_role t
+    <where> 
+     <if test="likename !=null and likename!= '' ">  
+            t.name LIKE concat('%',#{likename},'%')
+     </if>
+     <if test="name !=null ">  
+            AND  t.name = #{name, jdbcType=VARCHAR}  
+     </if>   
+     <if test="id != null and id!= '' ">  
+            AND t.ID = #{id, jdbcType=INTEGER}  
+     </if> 
+    </where>
+    <if test="sort != null and sort != ''">
+            order by ${sort} ${order}
+    </if>
+    <if test="length > 0">
+            limit #{offset},#{length}
+    </if>
+  </select>
+  
+  
+    <select id="findSysRolesCount" resultType="java.lang.Integer" parameterType="Map" >
+    SELECT 
+    count(id)
+    FROM ct_role t
+    <where> 
+     <if test="likename !=null and likename!= '' ">  
+            t.name LIKE concat('%',#{likename},'%')
+     </if>
+     </where>
+  </select>
+  
+  
+  
+  <delete id="deleteSysRole" parameterType="java.lang.Integer" >
+    delete from ct_role
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  
+    <delete id="deleteSysRoles">
+    delete from ct_role
+    where ID in
+    <foreach collection="array" item="ids"  open="(" separator="," close=")">  
+        #{ids}  
+     </foreach>  
+    </delete>
+  
+  
+   <insert id="addSysRole" parameterType="com.fr.here.model.SysRole" useGeneratedKeys="true"   keyProperty="id">
+    insert into ct_role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="info != null" >
+        info,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="info != null" >
+        #{info,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateSysRole" parameterType="com.fr.here.model.SysRole" >
+    update ct_role
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="info != null" >
+        info = #{info,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+
+</mapper>
