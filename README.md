@@ -7,7 +7,7 @@
 具体如何使用服务器跑web项目我就不说了，仅仅说一下和这个项目相关的
 >数据库使用mysql，在doc目录项有sql语句，直接导入mysql即可（如果你没有修改的话，超级管理员：shli  123456）
 ###跑起来后
-![](http://pan.baidu.com/s/1geZswAR)
+![](http://i1.piimg.com/1949/ab462ba28e918e46.gif)
 ![](http://i.imgur.com/GJmVWvv.jpg)
 ![](http://i.imgur.com/Ag6GA35.jpg)
 ![](http://i.imgur.com/T6P2AxO.jpg)
