@@ -7,14 +7,10 @@
 具体如何使用服务器跑web项目我就不说了，仅仅说一下和这个项目相关的
 >数据库使用mysql，在doc目录项有sql语句，直接导入mysql即可（如果你没有修改的话，超级管理员：shli  123456）
 ###跑起来后
-![](https://github.com/aclululu/fr-here/tree/master/doc/ViewPagerIndicator.gif)
-
-![](https://github.com/aclululu/fr-here/tree/master/doc/1.jpg)
-
-![](https://github.com/aclululu/fr-here/tree/master/doc/2.jpg)
-
-![](https://github.com/aclululu/fr-here/tree/master/doc/3.jpg)
-
+![](http://pan.baidu.com/s/1geZswAR)
+![](http://i.imgur.com/GJmVWvv.jpg)
+![](http://i.imgur.com/Ag6GA35.jpg)
+![](http://i.imgur.com/T6P2AxO.jpg)
 
 ##使用到的技术&通过她可以学到
 * spring+spingMVC+mybatis开发框架整合
